@@ -260,7 +260,22 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
 
 
+def already_running():
+    import socket
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.settimeout(0.5)
+    try:
+        s.connect(("127.0.0.1", PORT))
+        return True
+    except OSError:
+        return False
+    finally:
+        s.close()
+
+
 def main():
+    if already_running():
+        return
     server = HTTPServer(("127.0.0.1", PORT), Handler)
     server.serve_forever()
 
