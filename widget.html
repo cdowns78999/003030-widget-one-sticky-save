@@ -199,6 +199,13 @@
   }
   .stick-note .mirror-dot.typing { background:var(--accent-deep); opacity:1; box-shadow:0 0 6px 1px rgba(193,68,14,0.6); }
   .stick-note .mirror-dot.saved { background:var(--green); opacity:1; box-shadow:0 0 6px 1px rgba(127,176,105,0.6); }
+  .stick-note .gh-star {
+    position:absolute; bottom:8px; right:10px;
+    font-size:13px; color:#8a7326; opacity:0.75;
+    animation:gh-spin 6s linear infinite;
+    text-decoration:none; cursor:pointer;
+  }
+  @keyframes gh-spin { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
 </style>
 </head>
 <body>
@@ -230,6 +237,7 @@
       <span class="note-label">STICKY NOTE</span>
       <span class="mirror-dot" id="mirrorDot" title="idle"></span>
       <textarea id="noteText" placeholder="jot something…" oninput="noteChanged()"></textarea>
+      <a class="gh-star" href="https://github.com/cdowns78999/003030-widget-one-sticky-save" target="_blank" title="github: live">★</a>
     </div>
   </div>
 </div>
