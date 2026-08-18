@@ -10,13 +10,18 @@ Add-Type @"
 using System;
 using System.Runtime.InteropServices;
 public class Win {
-  [DllImport("user32.dll")] public static extern bool SetWindowPos(IntPtr h, IntPtr ib, int x, int y, int cx, int cy, uint u);
+  [DllImport("user32.dll", SetLastError=true)] public static extern bool SetWindowPos(IntPtr h, IntPtr ib, int x, int y, int cx, int cy, uint u);
+  [DllImport("user32.dll", SetLastError=true, CharSet=CharSet.Unicode)] public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
 }
 "@
-$p = Get-Process chrome -ErrorAction SilentlyContinue | Where-Object { $_.MainWindowTitle -eq "Claude Tokens" } | Select-Object -First 1
-if (-not $p) { Write-Output "not-found"; exit 1 }
+# Process.MainWindowTitle only reports ONE window per process, so with multiple
+# chrome --app widgets sharing chrome.exe's process pool it can match the wrong
+# widget (or none). FindWindow looks up the actual top-level window by title
+# directly instead — no per-process ambiguity.
+$target = [Win]::FindWindow($null, "Claude Tokens")
+if ($target -eq [IntPtr]::Zero) { Write-Output "not-found"; exit 1 }
 $topmost = [IntPtr]({TOPMOST})
-[Win]::SetWindowPos($p.MainWindowHandle, $topmost, 0, 0, 0, 0, 0x0001 -bor 0x0002)
+[Win]::SetWindowPos($target, $topmost, 0, 0, 0, 0, 0x0001 -bor 0x0002)
 Write-Output "ok"
 '''
 
